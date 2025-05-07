@@ -132,7 +132,7 @@ def diff(df_crm: pl.DataFrame, df_surfe: pl.DataFrame) -> pl.DataFrame:
     Returns:
         pl.DataFrame: joined dataframe with columns indicating differences
     """
-    df_flat_join = df_crm.join(df_surfe, on="externalID", suffix="_df2")
+    df_flat_join = df_crm.join(df_surfe, on="externalID", suffix="_surfe")
 
     df_email_explode = (
         df_flat_join.select(
@@ -140,39 +140,39 @@ def diff(df_crm: pl.DataFrame, df_surfe: pl.DataFrame) -> pl.DataFrame:
             pl.col("email").alias("email_df1"),
             pl.col("emails").explode().struct.unnest(),
         )
-        .select(pl.exclude("email"), pl.col("email").alias("email_df2"))
+        .select(pl.exclude("email"), pl.col("email").alias("email_surfe"))
         .filter(pl.col("validationStatus").is_in(["VALID", "CATCH_ALL"]))
     )
 
     df_emails = df_email_explode.group_by("externalID").agg(
-        pl.col("email_df2"), pl.col("validationStatus")
+        pl.col("email_surfe"), pl.col("validationStatus")
     )
 
     df_join_emails = df_flat_join.join(df_emails, on="externalID", how="left")
 
     df_join_emails = df_join_emails.select(
         pl.all(),
-        pl.col("email_df2")
+        pl.col("email_surfe")
         .list.contains(pl.col("email"))
-        .alias("old_email_in_results"),
+        .alias("crm_email_in_surfe_results"),
     )
 
     df_diff = df_join_emails.with_columns(
         has_diff=pl.any_horizontal(
             *list(
-                pl.col(x).ne_missing(pl.col(f"{x}_df2"))
+                pl.col(x).ne_missing(pl.col(f"{x}_surfe"))
                 for x in df_crm.columns
                 if x not in ["externalID", "email", "linkedInUrl"]
             ),
             pl.col("linkedInUrl").str.extract("/in/(\w+)/{0,1}")
-            != pl.col("linkedInUrl_df2").str.extract("/in/(\w+)/{0,1}"),
+            != pl.col("linkedInUrl_surfe").str.extract("/in/(\w+)/{0,1}"),
         )
     )
 
     df_out = df_diff.select(
-        pl.exclude("email_df2", "validationStatus", "emails", "mobilePhones"),
-        pl.col("email_df2").list.join(";").alias("emails2"),
-        pl.col("validationStatus").list.join(";").alias("emails2ValidationStatus"),
+        pl.exclude("email_surfe", "validationStatus", "emails", "mobilePhones"),
+        pl.col("email_surfe").list.join(";").alias("emails_surfe"),
+        pl.col("validationStatus").list.join(";").alias("emails_surfeValidationStatus"),
     )
 
     return df_out
