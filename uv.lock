@@ -617,7 +617,7 @@ wheels = [
 
 [[package]]
 name = "surfe-auto-enrich"
-version = "0.1.2"
+version = "0.1.3"
 source = { editable = "." }
 dependencies = [
     { name = "ipykernel" },
