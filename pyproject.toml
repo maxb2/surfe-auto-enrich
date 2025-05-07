@@ -1,6 +1,6 @@
 [project]
 name = "surfe-auto-enrich"
-version = "0.1.1"
+version = "0.1.2"
 description = "Add your description here"
 readme = "README.md"
 authors = [
@@ -11,9 +11,7 @@ dependencies = [
     "ipykernel>=6.29.5",
     "polars>=1.29.0",
     "requests>=2.32.3",
-    "tinydb>=4.8.2",
     "typer>=0.15.3",
-    "typer-config[python-dotenv]>=1.4.2",
 ]
 
 [project.scripts]
