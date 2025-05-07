@@ -6,8 +6,9 @@ It will make an output csv with the data from Surfe and flag the records if ther
 ## Getting Started
 
 1. [Install uv](https://docs.astral.sh/uv/getting-started/installation/).
-2. Run `uv run surfe-enrich` in this folder.
-3. Profit!
+2. Add your API key to `example.env` and rename it to `.env`.
+3. Run `uv run surfe-enrich` in this folder.
+4. Profit!
 
 ## Output CSV fields
 
