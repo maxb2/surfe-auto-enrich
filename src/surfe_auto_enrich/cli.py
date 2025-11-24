@@ -4,7 +4,7 @@ from typing import Annotated, Optional
 import polars as pl
 import typer
 
-from .operations import diff, enrich
+from .operations import clean_df_columns, diff, enrich
 
 app = typer.Typer()
 
@@ -20,6 +20,9 @@ def submit_enrichment(
         Optional[int],
         typer.Option(help="how frequently to check for the results (seconds)"),
     ] = 10,
+    clean_columns: Annotated[
+        Optional[bool], typer.Option(help="whether to clean the output CSV columns")
+    ] = True,
 ):
     """Surfe Enrichment.
 
@@ -37,6 +40,9 @@ def submit_enrichment(
 
     if diffs_only:
         diff_df = diff_df.filter(pl.col("has_diff") & pl.col("old_email_in_results"))
+
+    if clean_columns:
+        diff_df = clean_df_columns(diff_df)
 
     diff_df.write_csv(output)
 

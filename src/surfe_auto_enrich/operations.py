@@ -176,3 +176,16 @@ def diff(df_crm: pl.DataFrame, df_surfe: pl.DataFrame) -> pl.DataFrame:
     )
 
     return df_out
+
+
+def clean_df_columns(out_df: pl.DataFrame) -> pl.DataFrame:
+    """Clean output dataframe columns.
+
+    Args:
+        out_df (pl.DataFrame): df to clean
+
+    Returns:
+        pl.DataFrame: cleaned df
+    """
+
+    return out_df.select(OUTPUT_COLUMNS_SAFE)
